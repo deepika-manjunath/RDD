@@ -1,0 +1,48 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Dependencies
+node_modules/
+
+# Build outputs
+dist/
+dist-ssr/
+build/
+.output/
+.vinxi/
+.nitro/
+
+# Framework / tooling
+.tanstack/
+.wrangler/
+.dev.vars/
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# TypeScript
+*.tsbuildinfo
+
+# Local
+*.local
+
+# Editor
+.vscode/
+!.vscode/extensions.json
+.idea/
+
+# OS
+.DS_Store
+
+# Misc
+coverage/
+
+.workspace/
