@@ -40,6 +40,13 @@ export const sendSosSms = createServerFn({ method: "POST" })
     const TWILIO_API_KEY_SECRET = process.env.TWILIO_API_KEY_SECRET;
     const TWILIO_PHONE_NUMBER = process.env.TWILIO_PHONE_NUMBER;
 
+    console.log("Twilio configured:", {
+      hasSID: !!TWILIO_ACCOUNT_SID,
+      hasKeySID: !!TWILIO_API_KEY_SID,
+      hasSecret: !!TWILIO_API_KEY_SECRET,
+      hasPhone: !!TWILIO_PHONE_NUMBER,
+    });
+
     if (!TWILIO_ACCOUNT_SID || !TWILIO_API_KEY_SID || !TWILIO_API_KEY_SECRET || !TWILIO_PHONE_NUMBER) {
       return {
         ok: false,
@@ -49,7 +56,6 @@ export const sendSosSms = createServerFn({ method: "POST" })
       };
     }
 
-    // Load the user's emergency contacts explicitly for this authenticated user.
     const { data: contacts, error: contactsErr } = await supabase
       .from("emergency_contacts")
       .select("name, phone")
@@ -69,7 +75,6 @@ export const sendSosSms = createServerFn({ method: "POST" })
       };
     }
 
-    // display name from profile
     const { data: profile } = await supabase
       .from("profiles")
       .select("display_name")
@@ -127,18 +132,15 @@ export const sendSosSms = createServerFn({ method: "POST" })
 
     const successCount = results.filter((r) => r.ok).length;
 
-    // Log alert + flip trip status (RLS ensures user owns these rows)
-    await supabase.from("trip_alerts").insert([
-      {
-        trip_id: data.tripId,
-        user_id: userId,
-        kind: data.reason,
-        lat: data.lat,
-        lng: data.lng,
-        notified_contacts: successCount > 0,
-        notes: `SMS sent to ${successCount}/${contacts.length} contact(s) via Twilio.`,
-      },
-    ]);
+    await supabase.from("trip_alerts").insert([{
+      trip_id: data.tripId,
+      user_id: userId,
+      kind: data.reason,
+      lat: data.lat,
+      lng: data.lng,
+      notified_contacts: successCount > 0,
+      notes: `SMS sent to ${successCount}/${contacts.length} contact(s) via Twilio.`,
+    }]);
 
     await supabase
       .from("trips")
